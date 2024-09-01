@@ -30,3 +30,28 @@ new MongoClient(url)
 app.get("/", (req, res) => {
   res.render("home.ejs");
 });
+
+app.get("/list", async (요청, 응답) => {
+  let result = await db.collection("post").find().toArray();
+  응답.render("list.ejs", { posts: result });
+});
+
+app.get("/write", (req, res) => {
+  res.render("write.ejs");
+});
+
+app.post("/add", async (req, res) => {
+  try {
+    if (req.body.title === "" || req.body.content === "") {
+      res.send("내용을 입력해주세요.");
+    } else {
+      const doc = await db
+        .collection("post")
+        .insertOne({ title: req.body.title, content: req.body.content });
+      console.log(`document 추가가됨 _id : ${doc.insertedId}`);
+      res.redirect("/list");
+    }
+  } catch (e) {
+    res.status(500).send(`서버에러, log:${e}`);
+  }
+});
