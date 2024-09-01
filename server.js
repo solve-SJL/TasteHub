@@ -27,6 +27,6 @@ new MongoClient(url)
     console.log(err);
   });
 
-app.get("/", async (req, res) => {
-  res.send("HOME");
+app.get("/", (req, res) => {
+  res.render("home.ejs");
 });
