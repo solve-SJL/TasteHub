@@ -1,0 +1,18 @@
+{
+  "name": "tastehub",
+  "version": "1.0.0",
+  "description": "다양한 음식점들의 리뷰를 남기고 공유할수있는 플랫폼",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "mongodb": "^5.9.2"
+  }
+}
