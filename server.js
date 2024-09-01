@@ -9,7 +9,7 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 let db;
 const url = process.env.DB_URL;
@@ -54,4 +54,11 @@ app.post("/add", async (req, res) => {
   } catch (e) {
     res.status(500).send(`서버에러, log:${e}`);
   }
+});
+
+app.get("/detail/:id", async (req, res) => {
+  const id = req.params.id;
+  const nid = new ObjectId(id);
+  const post = await db.collection("post").findOne({ _id: nid });
+  res.render("detail.ejs", { post, port });
 });

@@ -16,5 +16,16 @@
       </div>
       <% } %>
     </div>
+    <script>
+      const lists = document.querySelectorAll(".list-box");
+      const port = "<%= process.env.PORT %>";
+
+      lists.forEach(function (list) {
+        list.addEventListener("click", function () {
+          const index = list.getAttribute("data-index");
+          window.location.href = `http://localhost:${port}/detail/${index}`;
+        });
+      });
+    </script>
   </body>
 </html>
