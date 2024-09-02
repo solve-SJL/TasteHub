@@ -31,9 +31,18 @@ app.get("/", (req, res) => {
   res.render("home.ejs");
 });
 
-app.get("/list", async (요청, 응답) => {
-  let result = await db.collection("post").find().toArray();
-  응답.render("list.ejs", { posts: result });
+app.get("/list/", async (req, res) => {
+  let result = await db.collection("post").find().limit(5).toArray();
+  res.render("list.ejs", { posts: result });
+});
+
+app.get("/list/:id", async (req, res) => {
+  let result = await db
+    .collection("post")
+    .find({ _id: { $gt: new ObjectId(req.params.id) } })
+    .limit(5)
+    .toArray();
+  res.render("list.ejs", { posts: result });
 });
 
 app.get("/write", (req, res) => {
