@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <%- include('nav.ejs') %>
+    <form class="form-box" action="/edit/<%= post._id %>" method="POST">
+      <h4>글수정</h4>
+      <input name="title" value="<%= post.title%>" />
+      <input name="content" value="<%= post.content%>" />
+      <button type="submit">전송</button>
+    </form>
+  </body>
+</html>

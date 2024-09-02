@@ -11,6 +11,17 @@
     <div class="detail-bg">
       <h4><%= post.title%></h4>
       <p><%= post.content%></p>
+      <button id="edit-btn">수정</button>
     </div>
+
+    <script>
+      const editBtn = document.getElementById("edit-btn");
+      const port = "<%= process.env.PORT %>";
+      const index = "<%= post._id %>";
+      console.log(editBtn);
+      editBtn.addEventListener("click", () => {
+        window.location.href = `http://localhost:${port}/edit/${index}`;
+      });
+    </script>
   </body>
 </html>

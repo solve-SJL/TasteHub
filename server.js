@@ -62,3 +62,35 @@ app.get("/detail/:id", async (req, res) => {
   const post = await db.collection("post").findOne({ _id: nid });
   res.render("detail.ejs", { post, port });
 });
+
+app.get("/edit/:id", async (req, res) => {
+  const id = req.params.id;
+  const nid = new ObjectId(id);
+  const post = await db.collection("post").findOne({ _id: nid });
+  res.render("edit.ejs", { post });
+});
+
+app.post("/edit/:id", async (req, res) => {
+  const id = req.params.id;
+  const nid = new ObjectId(id);
+  const title = req.body.title;
+  const content = req.body.content;
+  const updateData = { title, content };
+
+  try {
+    if (title === "" || content === "") {
+      res.send("값을 올바르게 수정해주세요.");
+    } else {
+      const result = await db.collection("post").updateOne(
+        { _id: nid }, // 조건
+        { $set: updateData } // 업데이트할 내용
+      );
+
+      if (result.modifiedCount > 0) {
+        res.redirect(`/detail/${id}`); // 수정 후 상세 페이지로 리디렉션
+      } else {
+        res.send("수정에 실패했습니다.");
+      }
+    }
+  } catch (error) {}
+});
