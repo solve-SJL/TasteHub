@@ -94,3 +94,25 @@ app.post("/edit/:id", async (req, res) => {
     }
   } catch (error) {}
 });
+
+app.delete("/delete", async (req, res) => {
+  const _id = req.body._id;
+
+  if (!_id) {
+    return res.status(400).send("Invalid request: _id가 필요합니다.");
+  }
+
+  try {
+    const objectId = new ObjectId(_id);
+    const result = await db.collection("post").deleteOne({ _id: objectId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).send("해당하는 게시글 찾지못하였습니다.");
+    }
+
+    console.log(`Document 삭제, _id: ${_id}`);
+    res.redirect("/list");
+  } catch (e) {
+    res.status(500).send(`서버에러, log:${e}`);
+  }
+});

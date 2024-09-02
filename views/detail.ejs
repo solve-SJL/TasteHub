@@ -12,15 +12,32 @@
       <h4><%= post.title%></h4>
       <p><%= post.content%></p>
       <button id="edit-btn">수정</button>
+      <button id="delete-btn">삭제</button>
     </div>
 
     <script>
       const editBtn = document.getElementById("edit-btn");
       const port = "<%= process.env.PORT %>";
       const index = "<%= post._id %>";
-      console.log(editBtn);
+
+      const deleteBtn = document.getElementById("delete-btn");
+
       editBtn.addEventListener("click", () => {
         window.location.href = `http://localhost:${port}/edit/${index}`;
+      });
+
+      deleteBtn.addEventListener("click", () => {
+        fetch("/delete", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ _id: index }),
+        }).then((response) => {
+          if (response.redirected) {
+            window.location.href = response.url;
+          }
+        });
       });
     </script>
   </body>
