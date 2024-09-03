@@ -172,7 +172,6 @@ passport.deserializeUser(async (user, done) => {
 });
 
 app.get("/login", async (req, res) => {
-  console.log(req.user);
   res.render("login.ejs", { user: req.user });
 });
 
@@ -190,4 +189,16 @@ app.post("/login", async (req, res, next) => {
 
 app.get("/profile/:userId", async (req, res) => {
   res.render("profile.ejs", { user: req.user });
+});
+
+app.get("/register", (req, res) => {
+  res.render("register.ejs", { user: req.user });
+});
+
+app.post("/register", async (req, res) => {
+  await db.collection("user").insertOne({
+    username: req.body.username,
+    password: req.body.password,
+  });
+  res.redirect("/");
 });
