@@ -6,13 +6,9 @@
     <title>Document</title>
     <link href="/main.css" rel="stylesheet" />
   </head>
-  <body>
+  <body class="grey-bg">
     <%- include('nav.ejs', { user: user }) %>
-    <form class="form-box" action="/edit/<%= post._id %>" method="POST">
-      <h4>글수정</h4>
-      <input name="title" value="<%= post.title%>" />
-      <input name="content" value="<%= post.content%>" />
-      <button type="submit">전송</button>
-    </form>
+    <h4>My Page</h4>
+    <p><%= user.username %>님의 정보</p>
   </body>
 </html>

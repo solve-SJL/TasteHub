@@ -8,10 +8,10 @@
   </head>
   <body>
     <%- include('nav.ejs', { user: user }) %>
-    <form class="form-box" action="/edit/<%= post._id %>" method="POST">
-      <h4>글수정</h4>
-      <input name="title" value="<%= post.title%>" />
-      <input name="content" value="<%= post.content%>" />
+    <form class="form-box" action="/login" method="POST">
+      <h4>로그인</h4>
+      <input name="username" />
+      <input name="password" type="password" />
       <button type="submit">전송</button>
     </form>
   </body>

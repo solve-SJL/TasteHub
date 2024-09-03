@@ -9,6 +9,21 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+
+app.use(passport.initialize());
+app.use(
+  session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 60 * 1000 }, // 로그인 유지 시간
+  })
+);
+app.use(passport.session());
+
 const { MongoClient, ObjectId } = require("mongodb");
 
 let db;
@@ -28,12 +43,12 @@ new MongoClient(url)
   });
 
 app.get("/", (req, res) => {
-  res.render("home.ejs");
+  res.render("home.ejs", { user: req.user });
 });
 
 app.get("/list/", async (req, res) => {
   let result = await db.collection("post").find().limit(5).toArray();
-  res.render("list.ejs", { posts: result });
+  res.render("list.ejs", { posts: result, user: req.user });
 });
 
 app.get("/list/:id", async (req, res) => {
@@ -42,11 +57,11 @@ app.get("/list/:id", async (req, res) => {
     .find({ _id: { $gt: new ObjectId(req.params.id) } })
     .limit(5)
     .toArray();
-  res.render("list.ejs", { posts: result });
+  res.render("list.ejs", { posts: result, user: req.user });
 });
 
 app.get("/write", (req, res) => {
-  res.render("write.ejs");
+  res.render("write.ejs", { user: req.user });
 });
 
 app.post("/add", async (req, res) => {
@@ -69,14 +84,14 @@ app.get("/detail/:id", async (req, res) => {
   const id = req.params.id;
   const nid = new ObjectId(id);
   const post = await db.collection("post").findOne({ _id: nid });
-  res.render("detail.ejs", { post, port });
+  res.render("detail.ejs", { post, port, user: req.user });
 });
 
 app.get("/edit/:id", async (req, res) => {
   const id = req.params.id;
   const nid = new ObjectId(id);
   const post = await db.collection("post").findOne({ _id: nid });
-  res.render("edit.ejs", { post });
+  res.render("edit.ejs", { post, user: req.user });
 });
 
 app.post("/edit/:id", async (req, res) => {
@@ -124,4 +139,55 @@ app.delete("/delete", async (req, res) => {
   } catch (e) {
     res.status(500).send(`서버에러, log:${e}`);
   }
+});
+
+passport.use(
+  new LocalStrategy(async (id, password, cb) => {
+    let result = await db.collection("user").findOne({ username: id });
+    if (!result) {
+      return cb(null, false, { message: "아이디 DB에 없음" });
+    }
+    if (result.password == password) {
+      return cb(null, result);
+    } else {
+      return cb(null, false, { message: "비번불일치" });
+    }
+  })
+);
+
+passport.serializeUser((user, done) => {
+  process.nextTick(() => {
+    done(null, { id: user._id, username: user.username });
+  });
+});
+
+passport.deserializeUser(async (user, done) => {
+  let result = await db
+    .collection("user")
+    .findOne({ _id: new ObjectId(user.id) });
+  delete result.password;
+  process.nextTick(() => {
+    done(null, result);
+  });
+});
+
+app.get("/login", async (req, res) => {
+  console.log(req.user);
+  res.render("login.ejs", { user: req.user });
+});
+
+app.post("/login", async (req, res, next) => {
+  passport.authenticate("local", (error, user, info) => {
+    if (error) return res.status(500).json(error);
+    if (!user) return res.status(500).json(info.message);
+
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      res.redirect("/");
+    });
+  })(req, res, next);
+});
+
+app.get("/profile/:userId", async (req, res) => {
+  res.render("profile.ejs", { user: req.user });
 });

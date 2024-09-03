@@ -2,4 +2,9 @@
   <a href="/" class="logo">LOGO</a>
   <a href="/list">List</a>
   <a href="/write">Write</a>
+  <% if (user) { %>
+  <a href="/profile/<%= user.username %>">MyPage</a>
+  <% } else { %>
+  <a href="/login">Login</a>
+  <% } %>
 </div>
