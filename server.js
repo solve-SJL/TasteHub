@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-
+const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -147,7 +147,8 @@ passport.use(
     if (!result) {
       return cb(null, false, { message: "아이디 DB에 없음" });
     }
-    if (result.password == password) {
+
+    if (await bcrypt.compare(password, result.password)) {
       return cb(null, result);
     } else {
       return cb(null, false, { message: "비번불일치" });
@@ -196,9 +197,27 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
+  if (req.body.username == "" || req.body.password == "") {
+    return res.send("아이디, 비밀번호를 입력해주세요.");
+  }
+
+  if (req.body.password.length < 4) {
+    return res.send("비밀번호는 4자 이상 적어주세요.");
+  }
+
+  const existUser = await db
+    .collection("user")
+    .findOne({ username: req.body.username });
+
+  if (existUser) {
+    return res.send("해당 유저이름이 이미 존재합니다.");
+  }
+
+  let hash = await bcrypt.hash(req.body.password, 10);
+
   await db.collection("user").insertOne({
     username: req.body.username,
-    password: req.body.password,
+    password: hash,
   });
   res.redirect("/");
 });
