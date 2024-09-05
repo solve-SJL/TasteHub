@@ -12,6 +12,10 @@ app.use(express.urlencoded({ extended: true }));
 const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const MongoStore = require("connect-mongo");
+
+const url = process.env.DB_URL;
+const port = process.env.PORT;
 
 app.use(passport.initialize());
 app.use(
@@ -20,6 +24,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 60 * 1000 }, // 로그인 유지 시간
+    store: MongoStore.create({
+      mongoUrl: url,
+      dbName: "forum",
+    }),
   })
 );
 app.use(passport.session());
@@ -27,8 +35,7 @@ app.use(passport.session());
 const { MongoClient, ObjectId } = require("mongodb");
 
 let db;
-const url = process.env.DB_URL;
-const port = process.env.PORT;
+
 new MongoClient(url)
   .connect()
   .then((client) => {
