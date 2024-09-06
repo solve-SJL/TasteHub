@@ -50,3 +50,19 @@ div {
   padding: 15px;
   margin-top: 10px;
 }
+
+.login-content {
+  display: flex;
+  justify-content: center;
+  padding: 100px;
+}
+
+.login-form {
+  width: 20%;
+}
+
+.login-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
