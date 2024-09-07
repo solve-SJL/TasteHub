@@ -148,24 +148,29 @@ app.delete("/delete", async (req, res) => {
   }
 });
 
+// 이메일&비번이 DB와 일치하는지 검증 정의
 passport.use(
-  new LocalStrategy(async (id, password, cb) => {
-    let result = await db.collection("user").findOne({ username: id });
-    if (!result) {
-      return cb(null, false, { message: "아이디 DB에 없음" });
-    }
+  new LocalStrategy(
+    { usernameField: "useremail", passwordField: "password" },
+    async (email, password, cb) => {
+      let result = await db.collection("user").findOne({ useremail: email });
+      if (!result) {
+        return cb(null, false, { message: "아이디 DB에 없음" });
+      }
 
-    if (await bcrypt.compare(password, result.password)) {
-      return cb(null, result);
-    } else {
-      return cb(null, false, { message: "비번불일치" });
+      if (await bcrypt.compare(password, result.password)) {
+        return cb(null, result);
+      } else {
+        // 일치하지않으면 false값 반환
+        return cb(null, false, { message: "비번불일치" });
+      }
     }
-  })
+  )
 );
 
 passport.serializeUser((user, done) => {
   process.nextTick(() => {
-    done(null, { id: user._id, username: user.username });
+    done(null, { id: user._id, useremail: user.useremail });
   });
 });
 
@@ -184,9 +189,10 @@ app.get("/login", async (req, res) => {
 });
 
 app.post("/login", async (req, res, next) => {
+  // 이메일 & 비밀번호 검증 사용
   passport.authenticate("local", (error, user, info) => {
     if (error) return res.status(500).json(error);
-    if (!user) return res.status(500).json(info.message);
+    if (!user) return res.status(401).json(info.message);
 
     req.logIn(user, (err) => {
       if (err) return next(err);
@@ -204,8 +210,8 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  if (req.body.username == "" || req.body.password == "") {
-    return res.send("아이디, 비밀번호를 입력해주세요.");
+  if (req.body.useremail == "" || req.body.password == "") {
+    return res.send("이메일, 비밀번호를 입력해주세요.");
   }
 
   if (req.body.password.length < 4) {
@@ -214,7 +220,7 @@ app.post("/register", async (req, res) => {
 
   const existUser = await db
     .collection("user")
-    .findOne({ username: req.body.username });
+    .findOne({ useremail: req.body.useremail });
 
   if (existUser) {
     return res.send("해당 유저이름이 이미 존재합니다.");
@@ -223,7 +229,7 @@ app.post("/register", async (req, res) => {
   let hash = await bcrypt.hash(req.body.password, 10);
 
   await db.collection("user").insertOne({
-    username: req.body.username,
+    useremail: req.body.useremail,
     password: hash,
   });
   res.redirect("/");
