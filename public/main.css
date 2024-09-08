@@ -51,18 +51,27 @@ div {
   margin-top: 10px;
 }
 
-.login-content {
+.form-center {
   display: flex;
   justify-content: center;
   padding: 100px;
 }
 
-.login-form {
+.auth-form {
   width: 20%;
 }
 
-.login-form-footer {
+.auth-form-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* 빨간 * 표시 */
+.auth-form .required {
+  color: red;
+}
+
+.auth-form .required.valid {
+  color: green;
 }
