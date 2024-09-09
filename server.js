@@ -49,16 +49,33 @@ new MongoClient(url)
     console.log(err);
   });
 
+function checkAuthInput(req, res, next) {
+  const { useremail, password } = req.body;
+
+  if (!useremail || !password) {
+    return res
+      .status(400)
+      .json({ message: "이메일 또는 비밀번호를 입력해주세요." });
+  }
+  next();
+}
+
 app.get("/", (req, res) => {
   res.render("home.ejs", { user: req.user });
 });
 
-app.get("/list/", async (req, res) => {
+function getCurrentTime(req, res, next) {
+  const now = new Date();
+  console.log(now.toString());
+  next();
+}
+
+app.get("/list/", getCurrentTime, async (req, res) => {
   let result = await db.collection("post").find().limit(5).toArray();
   res.render("list.ejs", { posts: result, user: req.user });
 });
 
-app.get("/list/:id", async (req, res) => {
+app.get("/list/:id", getCurrentTime, async (req, res) => {
   let result = await db
     .collection("post")
     .find({ _id: { $gt: new ObjectId(req.params.id) } })
@@ -188,7 +205,7 @@ app.get("/login", async (req, res) => {
   res.render("login.ejs", { user: req.user });
 });
 
-app.post("/login", async (req, res, next) => {
+app.post("/login", checkAuthInput, async (req, res, next) => {
   // 이메일 & 비밀번호 검증 사용
   passport.authenticate("local", (error, user, info) => {
     if (error) return res.status(500).json(error);
@@ -209,7 +226,7 @@ app.get("/register", (req, res) => {
   res.render("register.ejs", { user: req.user });
 });
 
-app.post("/register", async (req, res) => {
+app.post("/register", checkAuthInput, async (req, res) => {
   if (req.body.useremail == "" || req.body.password == "") {
     return res.send("이메일, 비밀번호를 입력해주세요.");
   }
