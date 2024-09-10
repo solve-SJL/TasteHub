@@ -32,6 +32,27 @@ app.use(
 );
 app.use(passport.session());
 
+const { S3Client } = require("@aws-sdk/client-s3");
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const s3 = new S3Client({
+  region: "ap-northeast-2",
+  credentials: {
+    accessKeyId: process.env.S3_KEY,
+    secretAccessKey: process.env.S3_SECRET,
+  },
+});
+
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: "taste-hub",
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString()); //업로드시 파일명 변경가능
+    },
+  }),
+});
+
 const { MongoClient, ObjectId } = require("mongodb");
 
 let db;
@@ -85,26 +106,28 @@ app.get("/list/:id", getCurrentTime, async (req, res) => {
 });
 
 app.get("/write", (req, res) => {
-  if (!req.user) {
-    res.send("로그인 후 이용가능합니다.");
-  }
   res.render("write.ejs", { user: req.user });
 });
 
 app.post("/add", async (req, res) => {
-  try {
-    if (req.body.title === "" || req.body.content === "") {
-      res.send("내용을 입력해주세요.");
-    } else {
-      const doc = await db
-        .collection("post")
-        .insertOne({ title: req.body.title, content: req.body.content });
-      console.log(`document 추가가됨 _id : ${doc.insertedId}`);
-      res.redirect("/list");
+  upload.single("img1")(req, res, async (err) => {
+    if (err) return res.send("업로드에러");
+    try {
+      if (req.body.title === "" || req.body.content === "") {
+        res.send("내용을 입력해주세요.");
+      } else {
+        const doc = await db.collection("post").insertOne({
+          title: req.body.title,
+          content: req.body.content,
+          img: req.file.location,
+        });
+        console.log(`document 추가가됨 _id : ${doc.insertedId}`);
+        res.redirect("/list");
+      }
+    } catch (e) {
+      res.status(500).send(`서버에러, log:${e}`);
     }
-  } catch (e) {
-    res.status(500).send(`서버에러, log:${e}`);
-  }
+  });
 });
 
 app.get("/detail/:id", async (req, res) => {
