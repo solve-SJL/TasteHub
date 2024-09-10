@@ -71,7 +71,3 @@ div {
 .auth-form .required {
   color: red;
 }
-
-.auth-form input:valid {
-  border: 1px solid aqua;
-}

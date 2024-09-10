@@ -85,6 +85,9 @@ app.get("/list/:id", getCurrentTime, async (req, res) => {
 });
 
 app.get("/write", (req, res) => {
+  if (!req.user) {
+    res.send("로그인 후 이용가능합니다.");
+  }
   res.render("write.ejs", { user: req.user });
 });
 
@@ -227,27 +230,42 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", checkAuthInput, async (req, res) => {
-  if (req.body.useremail == "" || req.body.password == "") {
-    return res.send("이메일, 비밀번호를 입력해주세요.");
+  const { useremail, password, confirm_password, username, nickname } =
+    req.body;
+  // 1. 이메일, 비밀번호 입력 확인
+  if (!useremail || !password || !confirm_password || !username || !nickname) {
+    return res.send("모든 항목을 입력해주세요.");
   }
 
-  if (req.body.password.length < 4) {
+  // 2. 비밀번호와 확인 비밀번호 비교
+  if (password !== confirm_password) {
+    return res.send("비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+  }
+
+  // 3. 비밀번호 길이 확인
+  if (password.length < 4) {
     return res.send("비밀번호는 4자 이상 적어주세요.");
   }
 
-  const existUser = await db
-    .collection("user")
-    .findOne({ useremail: req.body.useremail });
+  // 4. 이메일 중복 확인
+  const existUserEmail = await db.collection("user").findOne({ useremail });
+  if (existUserEmail) {
+    return res.send("해당 이메일이 이미 존재합니다.");
+  }
 
-  if (existUser) {
-    return res.send("해당 유저이름이 이미 존재합니다.");
+  // 5. 닉네임 중복 확인
+  const existUserNickname = await db.collection("user").findOne({ nickname });
+  if (existUserNickname) {
+    return res.send("해당 닉네임이 이미 존재합니다.");
   }
 
   let hash = await bcrypt.hash(req.body.password, 10);
 
   await db.collection("user").insertOne({
-    useremail: req.body.useremail,
+    useremail,
     password: hash,
+    username,
+    nickname,
   });
   res.redirect("/");
 });
