@@ -23,7 +23,9 @@
       <% } %>
     </div>
     <div>
-      <a href="/list/<%= posts[posts.length-1]._id %>"><button>다음</button></a>
+      <a href="/posts/list/<%= posts[posts.length-1]._id %>"
+        ><button>다음</button></a
+      >
     </div>
 
     <script>
@@ -33,7 +35,7 @@
       lists.forEach(function (list) {
         list.addEventListener("click", function () {
           const index = list.getAttribute("data-index");
-          window.location.href = `http://localhost:${port}/detail/${index}`;
+          window.location.href = `http://localhost:${port}/posts/list/detail/${index}`;
         });
       });
     </script>

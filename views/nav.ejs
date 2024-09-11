@@ -18,16 +18,18 @@
           <a class="nav-link active" aria-current="page" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/list">리스트</a>
+          <a class="nav-link" href="/posts/list">리스트</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-disabled="true" href="/write">글작성</a>
+          <a class="nav-link" aria-disabled="true" href="/posts/write"
+            >글작성</a
+          >
         </li>
         <li class="nav-item">
           <% if (user) { %>
           <a class="nav-link" href="/profile/<%= user.username %>">MyPage</a>
           <% } else { %>
-          <a class="nav-link" href="/login">Login</a>
+          <a class="nav-link" href="/auth/login">Login</a>
           <% } %>
         </li>
       </ul>

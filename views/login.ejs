@@ -15,7 +15,7 @@
   <body>
     <%- include('nav.ejs', { user: user }) %>
     <div class="form-center">
-      <form class="auth-form" action="/login" method="POST">
+      <form class="auth-form" action="/auth/login" method="POST">
         <h4>로그인</h4>
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label">이메일</label>
@@ -57,7 +57,7 @@
 
       btnRegister.addEventListener("click", (event) => {
         event.preventDefault(); // 폼 전송을 방지
-        window.location.href = `http://localhost:${port}/register`;
+        window.location.href = `http://localhost:${port}/auth/register`;
       });
     </script>
     <script
