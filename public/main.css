@@ -66,14 +66,9 @@ div {
   margin-top: 10px;
 }
 
-.form-center {
-  display: flex;
-  justify-content: center;
-  padding: 100px;
-}
-
 .auth-form {
-  width: 20%;
+  max-width: 330px;
+  padding: 1rem;
 }
 
 .auth-form-footer {

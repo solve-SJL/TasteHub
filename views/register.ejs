@@ -14,7 +14,7 @@
   </head>
   <body>
     <%- include('nav.ejs', { user: user }) %>
-    <div class="form-center">
+    <main class="auth-form w-100 m-auto">
       <form class="auth-form" action="/auth/register" method="POST">
         <h4>회원가입</h4>
         <div class="mb-3">
@@ -84,10 +84,11 @@
         </div>
 
         <div class="auth-form-footer">
-          <button type="submit" class="btn btn-primary">회원가입</button>
+          <button type="submit" class="btn btn-primary w-100">회원가입</button>
         </div>
       </form>
-    </div>
+    </main>
+    <%- include('footer.ejs') %>
     <script>
       // 회원가입 form 유효성 검사
       document

@@ -14,8 +14,8 @@
   </head>
   <body>
     <%- include('nav.ejs', { user: user }) %>
-    <div class="form-center">
-      <form class="auth-form" action="/auth/login" method="POST">
+    <main class="auth-form w-100 m-auto">
+      <form action="/auth/login" method="POST">
         <h4>로그인</h4>
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label">이메일</label>
@@ -50,7 +50,8 @@
           <button id="btn-register" class="btn btn-info">회원가입</button>
         </div>
       </form>
-    </div>
+    </main>
+    <%- include('footer.ejs') %>
     <script>
       const port = "<%= process.env.PORT %>";
       const btnRegister = document.getElementById("btn-register");
