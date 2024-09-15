@@ -81,3 +81,8 @@ div {
 .auth-form .required {
   color: red;
 }
+
+.category {
+  font-size: large;
+  font-weight: bold;
+}
