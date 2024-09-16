@@ -19,12 +19,14 @@
       <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
           <% for (let i =0; i< posts.length; i++){ %>
-          <div class="col list-box" data-index="<%= posts[i]._id%>">
+          <div class="col list-box">
             <div class="card shadow-sm">
               <div class="row g-0">
                 <!-- 이미지를 가로로 두 개 나란히 배치 -->
                 <div class="col-6">
                   <img
+                    data-index="<%= posts[i]._id%>"
+                    data-action="start"
                     src="https://taste-hub.s3.ap-northeast-2.amazonaws.com/1726064749989"
                     class="img-fluid"
                     alt="image1"
@@ -33,6 +35,8 @@
                 </div>
                 <div class="col-6">
                   <img
+                    data-index="<%= posts[i]._id%>"
+                    data-action="start"
                     src="https://taste-hub.s3.ap-northeast-2.amazonaws.com/1726064578646"
                     class="img-fluid"
                     alt="image2"
@@ -44,12 +48,16 @@
                 <div class="btn-group w-100">
                   <button
                     type="button"
+                    data-action="start"
+                    data-index="<%= posts[i]._id%>"
                     class="btn btn-sm btn-outline-secondary list-btn"
                   >
                     시작하기
                   </button>
                   <button
                     type="button"
+                    data-index="<%= posts[i]._id%>"
+                    data-action="ranking"
                     class="btn btn-sm btn-outline-secondary rank-btn"
                   >
                     랭킹보기
@@ -61,6 +69,22 @@
                     ><%= posts[i].content%></small
                   >
                 </div>
+                <div class="d-flex justify-content-start align-items-center">
+                  <small class="text-body-secondary">상준</small>
+                  <a
+                    href="#"
+                    class="d-block link-body-emphasis text-decoration-none ms-3"
+                    aria-expanded="false"
+                  >
+                    <img
+                      src="https://github.com/mdo.png"
+                      alt="mdo"
+                      width="32"
+                      height="32"
+                      class="rounded-circle"
+                    />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -69,30 +93,30 @@
       </div>
     </div>
 
-    <div>
+    <!-- <div>
       <a href="/posts/list/<%= posts[posts.length-1]._id %>"
         ><button>다음</button></a
       >
-    </div>
+    </div> -->
     <%- include('footer.ejs') %>
     <script>
-      const lists = document.querySelectorAll(".list-box");
       const port = "<%= process.env.PORT %>";
+      document.addEventListener("click", (e) => {
+        console.log(e.target);
+        if (e.target.dataset.action == undefined) return;
 
-      lists.forEach(function (list) {
-        list.addEventListener("click", function () {
-          const index = list.getAttribute("data-index");
-          window.location.href = `http://localhost:${port}/posts/detail/${index}`;
-        });
-      });
+        if (e.target.dataset.action == "start") {
+          const startTarget = e.target;
+          const dataIndex = startTarget.dataset.index;
+          window.location.href = `http://localhost:${port}/posts/detail/${dataIndex}`;
+        }
 
-      const rankButtons = document.querySelectorAll(".rank-btn");
-      rankButtons.forEach(function (list) {
-        list.addEventListener("click", function (event) {
-          // 상위 요소로 이벤트가 전파되지 않도록 막음
-          event.stopPropagation();
+        if (e.target.dataset.action == "ranking") {
+          const startTarget = e.target;
+          const dataIndex = startTarget.dataset.index;
+          //랭킹페이지 업데이트 필요
           window.location.href = `http://localhost:${port}`;
-        });
+        }
       });
     </script>
     <script

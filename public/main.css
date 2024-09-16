@@ -86,3 +86,18 @@ div {
   font-size: large;
   font-weight: bold;
 }
+
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 카드에 마우스를 올리면 확대되고 그림자가 진해짐 */
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 카드 안의 이미지에만 마우스 오버했을 때도 카드 전체를 강조 */
+.card img:hover {
+  cursor: pointer;
+}
